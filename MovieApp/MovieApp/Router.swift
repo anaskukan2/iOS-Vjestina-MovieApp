@@ -1,0 +1,55 @@
+import UIKit
+
+class Router: NSObject, UITabBarControllerDelegate {
+    let navigationController: UINavigationController
+    
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
+    
+    func startScreen(in window: UIWindow?) {
+
+        let movieCategoryViewController = createCategoriesController()
+        let favoriteMoviesViewController = createFavoritesController()
+        
+        let tabBarController = createTabBarController(with: [navigationController, favoriteMoviesViewController])
+
+        navigationController.setViewControllers([tabBarController], animated: false)
+        window?.rootViewController = tabBarController
+        
+        window?.makeKeyAndVisible()
+    }
+   
+    func createCategoriesController() -> UIViewController{
+        let movieCategoriesViewController = MovieCategoriesViewController(router: self)
+        movieCategoriesViewController.tabBarItem = UITabBarItem(
+          title: "Movie List",
+          image: UIImage(systemName: "house"),
+          selectedImage:  UIImage(systemName: "house.fill")?.withTintColor(.black, renderingMode: .alwaysOriginal))
+        return movieCategoriesViewController
+    }
+    
+    func createFavoritesController() -> UIViewController{
+        let favoritesViewController = FavouritesViewController()
+        favoritesViewController.tabBarItem = UITabBarItem(
+            title: "Favorites",
+            image:  UIImage(systemName: "heart"),
+            selectedImage: UIImage(systemName: "heart.fill")?.withTintColor(.black, renderingMode: .alwaysOriginal))
+        return favoritesViewController
+    }
+    
+    private func createTabBarController(with controllers: [UIViewController]) -> UITabBarController {
+        let tabBarController = UITabBarController()
+        tabBarController.tabBar.tintColor = UIColor(red: 11/255, green: 37/255, blue: 63/255, alpha: 1)
+        tabBarController.viewControllers = controllers
+        return tabBarController
+      }
+    
+    func showMovieDetails(with id: Int) {
+        let movieDetailsViewController = MovieDetailsViewController(id: id)
+        movieDetailsViewController.title = "Movie Details"
+        navigationController.pushViewController(movieDetailsViewController, animated: true)
+    }
+    
+}
+
