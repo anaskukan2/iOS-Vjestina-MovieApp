@@ -1,11 +1,26 @@
 import Foundation
 import MovieAppData
 import UIKit
+import Combine
 
-class MovieListViewController : UIViewController {
+class MovieListViewController: UIViewController {
     
     private var collectionView: UICollectionView!
-    let details = MovieUseCase()
+    
+    private var router: Router!
+    private var viewModel: MovieListViewModel!
+    private var movies: [Movie] = []
+    private var disposeables = Set<AnyCancellable>()
+    
+    init(router: Router, viewModel: MovieListViewModel) {
+        self.viewModel = viewModel
+        self.router = router
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -13,9 +28,23 @@ class MovieListViewController : UIViewController {
     }
 
     private func buildViews(){
+        fetchData()
         createViews()
         styleViews()
         defineLayout()
+    }
+    
+    private func fetchData(){
+        viewModel.fetchMovies()
+        viewModel
+                .$movies
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] movies in
+                    guard let self = self else { return }
+                        self.movies = movies
+                        self.collectionView.reloadData()
+                }
+                .store(in: &disposeables)
     }
     
     private func createViews(){
@@ -24,6 +53,8 @@ class MovieListViewController : UIViewController {
     }
     
     private func styleViews(){
+        self.title = "Movie List"
+        
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
         view.backgroundColor = .white
@@ -44,27 +75,32 @@ class MovieListViewController : UIViewController {
 
 extension MovieListViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        details.allMovies.count
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        1
+        movies.count
     }
   
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCell.identifier, for: indexPath) as? MovieListCell else {
           return UICollectionViewCell()
         }
-        
+    
         let index = indexPath.row
-        let url = URL(string: details.allMovies[index].imageUrl)
-        let name = details.allMovies[index].name
-        let summary = details.allMovies[index].summary
-        cell.configureCell(url: url, name: name, summary: summary)
+        let url = URL(string: movies[index].imageUrl)
+        let name = movies[index].name
+        let summary = movies[index].summary
+        let movieYear = movies[index].year
+        cell.configureCell(url: url, name: name, year: "(\(movieYear))", summary: summary)
         
         return cell
-      
+        
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            let movieDetails = viewModel.getMovieDetails(rowIndex: indexPath.row)
+            
+            if let movieDetails = movieDetails {
+                router.showMovieDetails(movieDetails: movieDetails)
+            }
+        }
 
 }
 

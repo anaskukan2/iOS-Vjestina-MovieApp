@@ -4,8 +4,9 @@ import MovieAppData
 import SDWebImage
 
 class MovieCategoryListCell: UICollectionViewCell {
-    var imageView = UIImageView()
-    var favouriteButton = UIButton()
+    private var imageView: UIImageView!
+    private var favouriteButton: UIButton!
+    private var imageView2: UIImageView!
     let details = MovieUseCase()
     
     override init(frame: CGRect) {
@@ -16,19 +17,23 @@ class MovieCategoryListCell: UICollectionViewCell {
     }
     
     func createViews() {
+        imageView = UIImageView()
         self.addSubview(imageView)
+        
+        favouriteButton = UIButton()
         imageView.addSubview(favouriteButton)
+        
+        let imageHeart = UIImage(systemName: "heart")
+        imageView2 = UIImageView(image: imageHeart)
+        favouriteButton.addSubview(imageView2)
     }
     
     func styleViews() {
         favouriteButton.alpha = 0.6
         favouriteButton.layer.backgroundColor = UIColor(red: 0.043, green: 0.145, blue: 0.247, alpha: 1).cgColor
         favouriteButton.layer.cornerRadius = 16
-        let imageHeart = UIImage(systemName: "heart")
-        let imageView2 = UIImageView(image: imageHeart)
-        imageView2.frame = CGRect(x: 7, y: 9, width: 18, height: 16.13)
+       
         imageView2.tintColor = .white
-        favouriteButton.addSubview(imageView2)
         
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
@@ -44,20 +49,24 @@ class MovieCategoryListCell: UICollectionViewCell {
         favouriteButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
         favouriteButton.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
         favouriteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 82)
+
+        imageView2.frame = CGRect(x: 7, y: 9, width: 18, height: 16.13)
     }
 
     func configureCell(movie: MovieModel) {
-        if let posterUrl = URL(string: movie.imageUrl) {
-            imageView.sd_setImage(with: posterUrl, placeholderImage: UIImage(systemName: "photo")
-            , completed: {[weak self] (image,error, cacheType, imageURL) in
-                if let error = error {
-                    print("Error loading image: \(error.localizedDescription)")
-                    print(movie.id)
-                } else {
-                    self?.imageView.image = image
-                }
-            })
-        }
+//        if let posterUrl = URL(string: movie.imageUrl) {
+//            imageView.sd_setImage(with: posterUrl, placeholderImage: UIImage(systemName: "photo")
+//            , completed: {[weak self] (image,error, cacheType, imageURL) in
+//                if let error = error {
+//                    print("Error loading image: \(error.localizedDescription)")
+//                    print(movie.id)
+//                } else {
+//                    self?.imageView.image = image
+//                }
+//            })
+//        }
+        let imageURL = URL(string: movie.imageUrl)
+        imageView.kf.setImage(with: imageURL)
     }
     
     required init?(coder: NSCoder) {

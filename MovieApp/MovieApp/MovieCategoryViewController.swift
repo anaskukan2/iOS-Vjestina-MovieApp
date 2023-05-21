@@ -5,11 +5,20 @@ import MovieAppData
 import SDWebImage
 
 class MovieCategoriesViewController: UIViewController {
-    
+    private var titleLabel: UILabel!
     private var collectionView: UICollectionView!
     private var categories: [[MovieModel]]!
     private var categorieTitles: [String]!
     let details = MovieUseCase()
+    
+    private var router: Router
+    
+    init(router: Router) {
+       self.router = router
+       super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) { fatalError() }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,11 +29,12 @@ class MovieCategoriesViewController: UIViewController {
         createViews()
         styleViews()
         defineLayout()
-        
     }
     
-    
     func createViews() {
+        titleLabel = UILabel()
+        view.addSubview(titleLabel)
+        
         categories = [[MovieModel]]()
         categories.append(details.popularMovies)
         categories.append(details.freeToWatchMovies)
@@ -32,11 +42,16 @@ class MovieCategoriesViewController: UIViewController {
         
         categorieTitles = ["What's popular", "Free to Watch", "Trending"]
 
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout() )
+        let flowlayout = UICollectionViewFlowLayout()
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowlayout )
         view.addSubview(collectionView)
     }
     
     func styleViews() {
+        titleLabel.text = "Movie List"
+        titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
+        
+        
         view.backgroundColor = .white
         collectionView.register(MovieCategoryCell.self, forCellWithReuseIdentifier: MovieCategoryCell.identifier)
         collectionView.dataSource = self
@@ -45,10 +60,15 @@ class MovieCategoriesViewController: UIViewController {
     }
     
     func defineLayout() {
-        collectionView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 25)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: 70)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 143)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .trailing)
+
+        
+        collectionView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 25)
         collectionView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 16)
-        collectionView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 45)
         collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
+        collectionView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 45)
     }
 
 }
@@ -65,7 +85,7 @@ extension MovieCategoriesViewController: UICollectionViewDataSource {
      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCategoryCell.identifier, for: indexPath) as? MovieCategoryCell else { return UICollectionViewCell() }
      
      let categoryURL = categories[indexPath.section].map { URL(string: $0.imageUrl) }
-     let title = categorieTitles[indexPath.section]
+     let title = categorieTitles[indexPath.item]
      cell.configure(with: categoryURL, categoryTitle: title)
          
      return cell

@@ -4,11 +4,11 @@ import MovieAppData
 import SDWebImage
 
 class MovieCategoryCell: UICollectionViewCell {
-    var indexOf: Int!
-    private var titleLabel = UILabel()
+    
+    private var titleLabel: UILabel!
     private var moviesURL: [URL?]!
     private var collectionViewCell: UICollectionView!
-    let details = MovieUseCase()
+    private var flowLayout: UICollectionViewFlowLayout!
     
     static let identifier = String(describing: MovieCategoryCell.self)
     
@@ -20,9 +20,12 @@ class MovieCategoryCell: UICollectionViewCell {
     }
     
     func createViews() {
+        titleLabel = UILabel()
         self.addSubview(titleLabel)
         
-        collectionViewCell = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout() )
+        flowLayout = UICollectionViewFlowLayout()
+        
+        collectionViewCell = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         self.addSubview(collectionViewCell)
     }
     
@@ -38,7 +41,6 @@ class MovieCategoryCell: UICollectionViewCell {
     }
     
     func defineLayout() {
-        let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
         
         titleLabel.autoSetDimension(.width, toSize: 358)
@@ -56,12 +58,14 @@ class MovieCategoryCell: UICollectionViewCell {
     }
 }
 
-extension MovieCategoryCell: UICollectionViewDataSource {
+extension MovieCategoryCell{
     public func configure(with moviesURL: [URL?], categoryTitle: String) {
         self.moviesURL = moviesURL
         self.titleLabel.text = categoryTitle
     }
-    
+}
+
+extension MovieCategoryCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         moviesURL.count
     }
@@ -70,23 +74,16 @@ extension MovieCategoryCell: UICollectionViewDataSource {
         1
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCategoryListCell", for: indexPath) as! MovieCategoryListCell?
-        if indexOf == 0 {
-            cell?.configureCell(movie: details.popularMovies[indexPath.item])
-        }
-        if indexOf == 1 {
-            cell?.configureCell(movie: details.freeToWatchMovies[indexPath.item])
-        }
-        if indexOf == 2 {
-            cell?.configureCell(movie: details.trendingMovies[indexPath.item])
-        }
-        return cell!
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCategoryListCell", for: indexPath) as! MovieCategoryListCell? else { return UICollectionViewCell() }
+        
+//        let movie =
+//        cell.configureCell(movie: moviesURL[indexPath.item])
+        
+        return cell
         
     }
-}
-
-extension MovieCategoryCell: UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 122, height: 179)
+        CGSize(width: 122, height: 179)
     }
 }
