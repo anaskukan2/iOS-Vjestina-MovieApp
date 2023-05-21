@@ -47,15 +47,15 @@ class LogInViewController: UIViewController {
         
         signInLabel.text = "Sign in"
         signInLabel.textColor = .white
-        signInLabel.font = UIFont(name: "ProximaNova-Bold", size: 24)
+        signInLabel.font = .systemFont(ofSize: 24, weight: .bold)
         
         emailLabel.text = "Email address"
         emailLabel.textColor = .white
-        emailLabel.font = UIFont(name: "ProximaNova-Semibold", size: 14)
+        emailLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         
         passwordLabel.text = "Password"
         passwordLabel.textColor = .white
-        passwordLabel.font = UIFont(name: "ProximaNova-Semibold", size: 14)
+        passwordLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         
         styleTextField(emailTextField, placeholder: "ex. Matt@iosCourse.com")
         styleTextField(passwordTextField, placeholder: "Enter your password")
@@ -65,7 +65,7 @@ class LogInViewController: UIViewController {
         signInButton.layer.cornerRadius = 10
         signInButton.setTitle("Sign in", for: .normal)
         signInButton.titleLabel?.textColor = .white
-        signInButton.titleLabel?.font = UIFont(name: "ProximaNova-Semibold", size: 14)
+        signInButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
     }
     
     private func defineLayout(){
