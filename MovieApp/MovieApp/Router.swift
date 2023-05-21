@@ -9,10 +9,8 @@ class Router: NSObject, UITabBarControllerDelegate {
     
     func startScreen(in window: UIWindow?) {
 
-        let movieCategoryViewController = createCategoriesController()
         let favoriteMoviesViewController = createFavoritesController()
-        
-        let tabBarController = createTabBarController(with: [navigationController, favoriteMoviesViewController])
+        let tabBarController = createTabBarController(with: [createCategoriesController(), favoriteMoviesViewController])
 
         navigationController.setViewControllers([tabBarController], animated: false)
         window?.rootViewController = tabBarController
@@ -46,7 +44,7 @@ class Router: NSObject, UITabBarControllerDelegate {
       }
     
     func showMovieDetails(with id: Int) {
-        let movieDetailsViewController = MovieDetailsViewController(id: id)
+        let movieDetailsViewController = MovieDetailsViewController()
         movieDetailsViewController.title = "Movie Details"
         navigationController.pushViewController(movieDetailsViewController, animated: true)
     }
